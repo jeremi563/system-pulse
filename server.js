@@ -8,7 +8,8 @@ const os = require('os');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 3000;
+// ✅ FIX: Use Render's dynamic PORT environment variable, fallback to 3000 locally
+const PORT = process.env.PORT || 3000;
 
 // Helper: format bytes to readable
 function formatBytes(bytes) {

@@ -4,15 +4,19 @@
 // The frontend uses the Fetch API to call the
 // Node.js REST endpoint:  GET /api/system
 //
-// The backend (server.js) runs on localhost:3000,
-// handles CORS, reads OS data via Node's `os` module,
-// and returns it as JSON.
+// The backend (server.js) serves both the static
+// files AND the API from the same server, so we
+// use a relative URL ('/api/system') which works
+// both locally and on Render (or any host).
 //
 // The frontend then parses the JSON and updates
 // the DOM elements with the received data.
 // ─────────────────────────────────────────────
 
-const API_URL = 'http://localhost:3000/api/system';
+// ✅ FIX: Use a relative URL instead of hardcoded localhost.
+// This works locally (http://localhost:3000) AND on Render
+// (https://your-app.onrender.com) without any changes.
+const API_URL = '/api/system';
 
 function fmt(bytes) {
   const u = ['B','KB','MB','GB'];
