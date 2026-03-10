@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SysPulse — System Monitor | Jeremia Obed</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="logo">
+      <div class="logo-icon">⬡</div>
+      <div>
+        <h1>SYSPULSE</h1>
+        <span>SYSTEM MONITOR v1.0 · BY JEREMIA OBED</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="status-dot">
+        <div class="dot" id="status-dot"></div>
+        <span id="status-text">CONNECTING</span>
+      </div>
+      <span class="last-update" id="last-update"></span>
+      <button class="refresh-btn" id="refresh-btn" onclick="fetchData()">⟳ REFRESH</button>
+    </div>
+  </header>
+
+  <!-- Loading -->
+  <div id="loading">
+    <div class="spinner"></div>
+    <p style="color: var(--muted); letter-spacing: 2px; font-size: 13px;">FETCHING SYSTEM DATA...</p>
+  </div>
+
+  <!-- Error -->
+  <div id="error-state">
+    <h2>⚠ CONNECTION FAILED</h2>
+    <p>
+      Cannot reach the Node.js backend.<br/><br/>
+      Make sure the server is running:<br/>
+      <code>node server.js</code><br/><br/>
+      Then open <code>http://localhost:3000</code>
+    </p>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard">
+
+    <!-- Top stat cards -->
+    <div class="grid-top">
+      <div class="card stat-card">
+        <div class="card-title">HOSTNAME</div>
+        <div class="value" id="s-hostname" style="font-size:20px">—</div>
+        <div class="sub" id="s-platform">—</div>
+      </div>
+      <div class="card stat-card accent2">
+        <div class="card-title">CPU CORES</div>
+        <div class="value" id="s-cores">—</div>
+        <div class="label">LOGICAL CORES</div>
+        <div class="sub" id="s-arch">—</div>
+      </div>
+      <div class="card stat-card accent3">
+        <div class="card-title">MEMORY USED</div>
+        <div class="value" id="s-memused">—</div>
+        <div class="label">OF TOTAL RAM</div>
+        <div class="sub" id="s-memtotal">—</div>
+      </div>
+      <div class="card stat-card purple">
+        <div class="card-title">UPTIME</div>
+        <div class="value" id="s-uptime" style="font-size:16px">—</div>
+        <div class="sub" id="s-nodever">—</div>
+      </div>
+    </div>
+
+    <!-- Main 2-col -->
+    <div class="grid-main">
+
+      <!-- Memory -->
+      <div class="card">
+        <div class="card-title">MEMORY USAGE</div>
+        <div class="progress-wrap">
+          <div class="progress-label">
+            <span>USED</span>
+            <span id="mem-used-pct">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill" id="mem-bar"></div>
+          </div>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Total RAM</span>
+          <span class="info-val highlight" id="m-total">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Used</span>
+          <span class="info-val" id="m-used">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Free</span>
+          <span class="info-val" id="m-free">—</span>
+        </div>
+        <div class="info-row">
+          <span class="info-key">Free %</span>
+          <span class="info-val" id="m-freepct">—</span>
+        </div>
+      </div>
+
+      <!-- CPU Info -->
+      <div class="card">
+        <div class="card-title">CPU LOAD AVERAGE</div>
+        <div class="load-row">
+          <div class="load-label">1 MIN</div>
+          <div class="load-track"><div class="load-fill" id="load-1" style="width:0%"></div></div>
+          <div class="load-val" id="load-1-val">—</div>
+        </div>
+        <div class="load-row">
+          <div class="load-label">5 MIN</div>
+          <div class="load-track"><div class="load-fill" id="load-5" style="width:0%"></div></div>
+          <div class="load-val" id="load-5-val">—</div>
+        </div>
+        <div class="load-row">
+          <div class="load-label">15 MIN</div>
+          <div class="load-track"><div class="load-fill" id="load-15" style="width:0%"></div></div>
+          <div class="load-val" id="load-15-val">—</div>
+        </div>
+        <div style="margin-top:16px">
+          <div class="info-row">
+            <span class="info-key">Model</span>
+            <span class="info-val" id="cpu-model">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-key">Speed</span>
+            <span class="info-val highlight" id="cpu-speed">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom 3-col -->
+    <div class="grid-bottom">
+
+      <!-- OS Details -->
+      <div class="card">
+        <div class="card-title">OS DETAILS</div>
+        <div class="info-row"><span class="info-key">OS Type</span><span class="info-val highlight" id="os-type">—</span></div>
+        <div class="info-row"><span class="info-key">Platform</span><span class="info-val" id="os-platform">—</span></div>
+        <div class="info-row"><span class="info-key">Release</span><span class="info-val" id="os-release">—</span></div>
+        <div class="info-row"><span class="info-key">Architecture</span><span class="info-val" id="os-arch">—</span></div>
+        <div class="info-row"><span class="info-key">Endianness</span><span class="info-val" id="os-endian">—</span></div>
+        <div class="info-row"><span class="info-key">Temp Dir</span><span class="info-val" id="os-tmp">—</span></div>
+      </div>
+
+      <!-- Network -->
+      <div class="card">
+        <div class="card-title">NETWORK INTERFACES</div>
+        <div id="network-list" style="max-height: 240px; overflow-y: auto;"></div>
+      </div>
+
+      <!-- Node / Process -->
+      <div class="card">
+        <div class="card-title">NODE PROCESS</div>
+        <div class="info-row"><span class="info-key">Node Version</span><span class="info-val highlight" id="node-ver">—</span></div>
+        <div class="info-row"><span class="info-key">PID</span><span class="info-val" id="node-pid">—</span></div>
+        <div class="info-row"><span class="info-key">Heap Used</span><span class="info-val" id="node-heap">—</span></div>
+        <div class="info-row"><span class="info-key">Heap Total</span><span class="info-val" id="node-heaptotal">—</span></div>
+        <div class="info-row"><span class="info-key">External</span><span class="info-val" id="node-ext">—</span></div>
+        <div class="info-row"><span class="info-key">RSS</span><span class="info-val" id="node-rss">—</span></div>
+      </div>
+    </div>
+
+    <div class="ts-bar" id="ts-bar"></div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-dev">DEVELOPED BY <span>JEREMIA OBED</span></div>
+  <div class="footer-copy">© 2026 · SYSPULSE SYSTEM MONITOR · ALL RIGHTS RESERVED</div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
